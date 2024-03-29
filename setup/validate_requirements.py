@@ -21,19 +21,19 @@ from library.custom_logging import setup_logging
 # Настройка ведения журнала
 log = setup_logging()
 
-def check_tensorflow():
 
+def check_tensorflow():
     # Проверка наличия CUDA или ROCm
     if shutil.which('nvidia-smi') is not None or os.path.exists(
-        os.path.join(
-            os.environ.get('SystemRoot') or r'C:\Windows',
-            'System32',
-            'nvidia-smi.exe',
-        )
+            os.path.join(
+                os.environ.get('SystemRoot') or r'C:\Windows',
+                'System32',
+                'nvidia-smi.exe',
+            )
     ):
         log.info('nVidia toolkit обнаружен')
     elif shutil.which('rocminfo') is not None or os.path.exists(
-        '/opt/rocm/bin/rocminfo'
+            '/opt/rocm/bin/rocminfo'
     ):
         log.info('AMD toolkit обнаружен')
     else:
@@ -50,7 +50,7 @@ def check_tensorflow():
             log.warning('TensorFlow сообщил, что GPU не доступен')
         else:
             # Информация о доступных устройствах
-            for device in tf.config.list_physical_devices('GPU'):
+            for index, device in enumerate(tf.config.list_physical_devices('GPU')):
                 log.info(f'TensorFlow обнаружил устройство: {device.name}')
 
                 # Получение информации о GPU
@@ -87,7 +87,6 @@ def main():
     else:
         if tensorflow_ver == 0:
             setup_common.install_requirements('requirements_windows_tensorflow.txt', check_no_verify_flag=True)
-
 
 
 if __name__ == '__main__':

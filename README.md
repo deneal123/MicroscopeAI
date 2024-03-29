@@ -3,35 +3,57 @@
 ---
 
 Приложение (веб-интерфейс) предназначенное для измерения размеров наночастиц сферической формы.
-В настоящее время находится в разработке. С помощью различных методов сгенерирован синтетический набор данных, на котором обучены модель детекции Yolov8x и модель сегментации Unet с бэкбоном senet154.
+В настоящее время находится в разработке.
 
-#### .EasyOcr положить в папку model - minibbox_ocr.pth, в папку user_network - minibbox_ocr.py и minibbox_ocr.yaml
-#### .Streamlit положить файл config
+
+> [**Разработка алгоритма классификации и сегментации
+> СЭМ-изображений сферических наночастиц на поверхности биосовместимых
+> материалов**](https://)           
+> Вольхин Д.Ф - студент НИУ МИЭТ.
+
 
 ### Установка
 
-1. Клонируйте репозиторий: `git clone https://github.com/deneal123/MicroscopyAI.git`
-2. Запустите файл `setup.but` и выберите нужный вариант установки. `Черное окно? Перезапустите`
-3. Дождитесь установки всех компонентов, затем запустите файл `webui.bat`
+1. Клонируйте репозиторий
+или скачайте [репозиторий](https://github.com/deneal123/MicroscopeAI/archive/refs/heads/master.zip)
+и распакуйте в удобное место.
+```
+git clone https://github.com/deneal123/MicroscopyAI.git
+```
+2. Запустите файл `setup.but` и выберите вариант "*Установка MicroscopeAI*".
+3. Скачайте и распакуйте [архив](https://disk.yandex.ru/d/ismGT13a5p5grw) `cudnn_windows` в корень репозитория 
+4. После установки всех необходимых зависимостей установите файлы cudnn, выбрав вариант "*Установка cudnn файлов*"
+в `setup.bat`.
+5. Скачайте [модели детекции](https://disk.yandex.ru/d/aJDHGdLKqtZVLw) и
+[модель сегментации](https://disk.yandex.ru/d/xXhibgKYoAt4yQ), распаковав их по путям `weights/weights_detect`
+и `weights/weights_seg` в корень директории репозитория соответственно.
+6. Скачайте [архив с пользовательскими файлами](https://disk.yandex.ru/d/5ihD1tBUnB1VGg).
+7. Файлы архива `minibbox_ocr.zip`
+распакуйте по пути `C:\Users\(Имя пользователя)\.EasyOCR` в директории `model` (файл .pth) и
+`user_network` (файлы .py и .yaml).
+8. Конфигурационный файл архива `config.zip` распакуйте по пути `C:\Users\(Имя пользователя)\.streamlit`.
+9. Для запуска приложения можно использовать соответсвующий пункт '*Запуск Web-UI в браузере*'
+в `setup.bat` или запустить `webui.bat`.
 
-### Интерфейс
 
-- **webui_train**: обучение моделей классификации и сегментации
-- **webui_demo**: измерение частиц
+
+### Структура репозитория
+
+
+
+
 
 ### Дополнительно
 
-Для работы приложения необходимо скачать файлы весов соответствующих моделей и расположить их в следующие папки в корне репозитория:
+Для работы приложения необходимо наличие весов соответствующих моделей, которые могут быть заменены,
+в указанных директориях:
 
-- "/weights/weights_detect/best_detect_2.pt"
-- "/weights/weights_detect/best_detect_bbox.pt"
-- "/weights/weights_detect/best_detect_bboxstick.pt"
-- "/weights/weights_detect/best_detect_minibbox.pt"
-- "/weights/weights_seg/2024_03_20_23_16_00_UNet_se_resnet50_micronet.pth"
+- "/weights/weights_detect/best_detect_3.pt" `Yolov8x`
+- "/weights/weights_detect/best_detect_bbox.pt" `Yolov8m`
+- "/weights/weights_detect/best_detect_bboxstick.pt" `Yolov8m`
+- "/weights/weights_detect/best_detect_minibbox.pt" `Yolov8m` 
+- "/weights/weights_seg/.14" (2 файла) `vgg_unet` *Архитектура модели в библиотеке ./library*
 
-А также установить папку cudnn_windows
-
-[ссылка на скачивание](https://disk.yandex.ru/d/aJDHGdLKqtZVLw)
 
 
 ### Демо
@@ -40,6 +62,9 @@
 
 ![Интерфейс Demo](https://github.com/deneal123/MicroscopyAI/blob/master/img/demo.png)
 
+
+
+
 ### Лицензия
 
-Этот проект распространяется под лицензией [AGPL-3.0 License](LICENSE).
+Этот проект распространяется под лицензией [Commercial License](LICENSE).

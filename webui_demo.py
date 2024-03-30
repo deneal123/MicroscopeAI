@@ -1,6 +1,6 @@
 import streamlit as st
 from library.page_tools_demo import PageTools
-from library.page_contact_demo import PageContact
+from library.page_visual_demo import PageContact
 from library.page_info_demo import PageInfo
 from library.components import footer_style, footer
 import hydralit_components as hc
@@ -57,18 +57,18 @@ st.markdown(footer_style, unsafe_allow_html=True)
 
 INFO = 'Информация'
 TOOLS = 'Инструменты'
-CONTACT = 'Контакты'
+VISUAL = 'Визуализация'
 
 tabs = [
     INFO,
     TOOLS,
-    CONTACT
+    VISUAL
 ]
 
 option_data = [
     {'icon': "📝", 'label': INFO},
     {'icon': "📐", 'label': TOOLS},
-    {'icon': "📞", 'label': CONTACT}
+    {'icon': "📊", 'label': VISUAL}
 ]
 
 chosen_tab = hc.option_bar(
@@ -83,7 +83,7 @@ if chosen_tab == INFO:
 elif chosen_tab == TOOLS:
     segmentation_page = PageTools()
     segmentation_page.run()
-elif chosen_tab == CONTACT:
+elif chosen_tab == VISUAL:
     contact_page = PageContact()
     contact_page.run()
 

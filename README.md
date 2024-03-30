@@ -55,6 +55,10 @@ git clone https://github.com/deneal123/MicroscopyAI.git
 - "/weights/weights_seg/.14" (2 файла) `vgg_unet` *Архитектура модели в библиотеке ./library*
 
 
+Если необходимо использовать другие веса, требуется модернизировать функцию `default_path()`
+в скрипте `config_file.py`, заменив соответствующие названия весов.
+
+
 
 ### Демо
 

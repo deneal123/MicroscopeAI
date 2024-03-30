@@ -2,6 +2,8 @@ import os
 from PIL import Image, ImageDraw, ImageFont
 import string
 import streamlit as st
+from config_file import load_config
+
 
 footer_style = f"""
     <style>
@@ -171,15 +173,11 @@ color_style = """
 """
 
 
-def add_text_to_image(image, text, position, font_size=30, text_color=(255, 255, 0), outline_color=(0, 0, 0),
+def add_text_to_image(draw, text, position, font_size=10, font_path=None, text_color=(255, 255, 0), outline_color=(0, 0, 0),
                       outline_width=2):
-    # Создаем объект ImageDraw
-    draw = ImageDraw.Draw(image)
 
-    # Загружаем шрифт Arial
-    script_path = os.path.realpath(__file__)
-    font_path = os.path.join(script_path, "image/ArialCyr.ttf")
-    font = ImageFont.truetype(font_path, font_size)
-
-    # Рисуем текст на изображении с обводкой
-    draw.text(position, text, font=font, fill=text_color, stroke_fill=outline_color, stroke_width=outline_width)
+    if font_path is None:
+        draw.text(position, text, fill=text_color, stroke_fill=outline_color, stroke_width=outline_width)
+    else:
+        font = ImageFont.truetype(font_path, font_size)
+        draw.text(position, text, font=font, fill=text_color, stroke_fill=outline_color, stroke_width=outline_width)

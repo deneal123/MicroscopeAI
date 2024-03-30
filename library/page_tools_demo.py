@@ -23,6 +23,7 @@ from library.tf_keras_predict import predict
 from library.vgg_unet import vgg_unet
 from tensorflow.keras.models import load_model
 import tensorflow as tf
+import json
 
 
 class PageTools:
@@ -31,51 +32,22 @@ class PageTools:
 
         # Назначение переменной логирования
         self.log = setup_logging()
-
         # Загрузка конфигурационного файла
         self.config_data = load_config()
-
         # Класс функций для отступов
         self.helper = IndentationHelper()
-
+        # Определяем время инициализации класса
         self._time()
-
-        self._refresh_param()
-
-        self.cont_load_images = None
-
-        self.script_path = self.config_data["script_path"]
-        self.temp_dir = os.path.join(self.script_path, "temp")
-
-        self.path_to_uploaded_image = os.path.join(self.temp_dir, "uploaded_image")
-        self.path_to_main_image = os.path.join(self.temp_dir, "main_image")
-        self.path_to_bbox = os.path.join(self.temp_dir, "bbox")
-        self.path_to_minibbox = os.path.join(self.temp_dir, "minibbox")
-        self.path_to_bboxstick = os.path.join(self.temp_dir, "bboxstick")
-        self.path_to_inference = os.path.join(self.script_path, "inference")
-
-        os.makedirs(self.path_to_uploaded_image, exist_ok=True)
-        os.makedirs(self.path_to_main_image, exist_ok=True)
-        os.makedirs(self.path_to_bbox, exist_ok=True)
-        os.makedirs(self.path_to_minibbox, exist_ok=True)
-        os.makedirs(self.path_to_bboxstick, exist_ok=True)
-        os.makedirs(self.path_to_inference, exist_ok=True)
-
-        self.path_to_detect_model = f"{self.script_path}/weights/weights_detect/best_detect_3.pt"
-        self.path_to_segment_model = f"{self.script_path}/weights/weights_seg/.14"
-        self.path_to_detect_model_bbox = f"{self.script_path}/weights/weights_detect/best_detect_bbox.pt"
-        self.path_to_detect_model_minibbox = f"{self.script_path}/weights/weights_detect/best_detect_minibbox.pt"
-        self.path_to_detect_model_bboxstick = f"{self.script_path}/weights/weights_detect/best_detect_bboxstick.pt"
-
-        self.list_path_to_uploaded_images = []
-        self.list_path_to_bbox = []
-        self.list_path_to_main_image = []
-        self.list_path_to_minibbox = []
-        self.list_path_to_bboxstick = []
-        self.list_path_to_inference = []
-        self.list_image_copy_with_mask = []
-
-        self.dir_num_sphere_for_every_image = {}
+        # Обновляем изменяемые переменные после предыдущего запуска
+        self._init_params()
+        # Выгружаем и инициализируем переменные стандартных путей
+        self._init_default_path()
+        # Создаем директории, если они не существуют
+        self._make_os_dir()
+        # Инициализируем листы
+        self._init_list()
+        # Инициализируем словари
+        self._init_dir()
 
         # Получаем путь к домашней папке пользователя
         home_path = os.path.expanduser("~")
@@ -94,26 +66,68 @@ class PageTools:
         self.segment_model = vgg_unet(n_classes=2, input_height=224, input_width=224)
         self.segment_model.load_weights(self.path_to_segment_model)
 
-        self.uploaded_images = None
-        self.scale = []
-        self.stick = []
-        self.name_uploaded_images = []
-        self.name_uploaded_images_without_ex = []
+    def _time(self):
+        self.timestamp = datetime.now().strftime("%Y_%m_%d_%H_%M")
 
-        self.start_time = None
-        self.end_time = None
-        self.execution_time = None
+    def _init_default_path(self):
+        paths = self.config_data["dir_paths"]
+        for key, value in paths.items():
+            setattr(self, key, self.config_data[f"{value}"])
 
-        self.progress = None
+    def _init_params(self):
+        params = self.config_data["dir_params"]
+        for key, value in params.items():
+            setattr(self, key, self.config_data[f"{value}"])
 
-        self.cont_param = None
-        self.apply_param_button = None
-        self.clean_temp_button = None
-        self.input_scale_param = None
+    def _init_list(self):
+        lists = self.config_data["dir_lists"]
+        for key, value in lists.items():
+            setattr(self, key, self.config_data[f"{value}"])
 
-        self.input_scale_bool = True
-        self.apply_param_bool = False
-        self.radio_scale_button = False
+    def _init_dir(self):
+        # Словарь для хранения информации о вычислениях
+        self.dir_data = {}
+        # Словарь для хранения количества сфер для каждого изображения
+        self.dir_num_sphere_for_every_image = {}
+        # Словарь для хранения значений диаметров для каждого изображения
+        self.dir_diameters_for_every_image = {}
+        # Словарь для хранения значений масштабов для каждого изображения
+        self.dir_scales_for_every_image = {}
+
+    def _refresh_inference_params(self):
+        self.boxes_ = []
+        self.segmented_images = []
+        self.segmented_results = []
+
+    def save_to_json(self, data, file_path):
+        """
+        Сохраняет данные в формате JSON в указанный файл.
+
+        Параметры:
+        - data: словарь или список данных для сохранения в JSON.
+        - file_path: строка, путь к файлу JSON.
+
+        Возвращает:
+        - None
+        """
+
+        with open(file_path, 'w') as json_file:
+            json.dump(data, json_file, indent=4)
+
+    def add_key_value(self, dictionary, key, value):
+        """
+        Добавляет новый ключ и значение в словарь.
+
+        Параметры:
+        - dictionary: словарь, в который добавляется новый ключ и значение.
+        - key: ключ для добавления.
+        - value: значение для добавления.
+
+        Возвращает:
+        - dictionary: словарь с добавленным ключом и значением.
+        """
+        dictionary[key] = value
+        return dictionary
 
     def run(self):
         """
@@ -132,9 +146,6 @@ class PageTools:
         # Подготовка данных
         if self.apply_param_button:
             self._prepare_data()
-
-            # Отобразить результаты
-            self._show()
 
             # Построение боксплота
             self._boxplot_num_sphere_all_image()
@@ -221,7 +232,6 @@ class PageTools:
                 self._separate_bboxstick()
 
                 if self.input_scale_bool:
-
                     # Мини коробка с масштабом изображения
                     self._separate_minibbox()
 
@@ -229,10 +239,7 @@ class PageTools:
                     self._define_scale()
 
             # Контейнер содержащий визуализацию аннотированного изображения
-            self.container_show_annotate_image()
-
-    def _time(self):
-        self.timestamp = datetime.now().strftime("%Y_%m_%d_%H_%M")
+            self.container_annotate_image()
 
     def _calculate_time_work(self):
         if self.uploaded_images is not None:
@@ -250,22 +257,13 @@ class PageTools:
         shutil.rmtree(self.path_to_minibbox)
         shutil.rmtree(self.path_to_bboxstick)
 
-    def _refresh_param(self):
-        self.results_detect = None
-        self.results_segment = None
-        self.results_detect_bbox = None
-        self.results_detect_minibbox = None
-        self.results_detect_bboxstick = None
-        self.main_image = None
-        self.bbox = None
-        self.minibbox = None
-        self.bboxstick = None
-        self.segmented_images = []
-        self.segmented_results = []
-        self.boxes_ = None
-        self.boxes_bbox = None
-        self.boxes_minibbox = None
-        self.boxes_bboxstick = None
+    def _make_os_dir(self):
+        os.makedirs(self.path_to_uploaded_image, exist_ok=True)
+        os.makedirs(self.path_to_main_image, exist_ok=True)
+        os.makedirs(self.path_to_bbox, exist_ok=True)
+        os.makedirs(self.path_to_minibbox, exist_ok=True)
+        os.makedirs(self.path_to_bboxstick, exist_ok=True)
+        os.makedirs(self.path_to_inference, exist_ok=True)
 
     def _load_images(self):
         """
@@ -512,7 +510,7 @@ class PageTools:
             self.scale[index] *= number_before_u_or_n
             st.info(f"scale: {self.scale[index]}")
 
-    def container_show_annotate_image(self):
+    def container_annotate_image(self):
         """
         Контейнер, содержащий визуализацию аннотированного изображения.
         """
@@ -563,7 +561,6 @@ class PageTools:
                     self.segmented_images.append(roi)
 
                 for i, seg_image in enumerate(self.segmented_images):
-
                     # Преобразование изображения в массив NumPy
                     img_array = img_to_array(seg_image)
 
@@ -571,7 +568,7 @@ class PageTools:
                     mask_pred = predict(model=self.segment_model, inp=img_array)
 
                     # Преобразование маски в бинарную маску (0 или 1)
-                    binary_mask = (mask_pred > 0.9).astype(np.uint8)
+                    binary_mask = (mask_pred > 0.7).astype(np.uint8)
 
                     # Преобразование бинарной маски в объект PIL Image
                     mask_pred_pil = Image.fromarray(binary_mask * 255)
@@ -638,66 +635,55 @@ class PageTools:
                     draw.rectangle([x_pixel, y_pixel, x_pixel + w_pixel, y_pixel + h_pixel], outline="green",
                                    width=1)
 
-                    draw.text(text=f"{i}", xy=[x_pixel + 2, y_pixel], fill=(255, 255, 0), stroke_fill=(0, 0, 0),
-                              stroke_width=0.5)
+                    add_text_to_image(draw=draw,
+                                      text=f"{i}",
+                                      position=[x_pixel + 2, y_pixel],
+                                      outline_width=0)
 
                     if self.radio_scale_button == "Режим с измерениями":
-                        draw.text(text=f"{diameters[i]: .0f}nm", xy=[x_pixel - 4, y_pixel + (h_pixel - 10)],
-                                  fill=(255, 255, 0), stroke_fill=(0, 0, 0), stroke_width=0.5)
+                        add_text_to_image(draw=draw,
+                                          text=f"{diameters[i]: .0f}nm",
+                                          position=[x_pixel - 4, y_pixel + (h_pixel - 10)],
+                                          outline_width=0)
 
-                # Запись количества частиц на одном изображении в лист.
-                self.dir_num_sphere_for_every_image[self.name_uploaded_images[index]] = count
+                # Запись количества частиц на одном изображении в словарь.
+                self.dir_num_sphere_for_every_image[self.name_uploaded_images_without_ex[index]] = count
+                if self.radio_scale_button == "Режим с измерениями":
+                    # Запись значения диаметров частиц на одном изображении в словарь.
+                    self.dir_diameters_for_every_image[self.name_uploaded_images_without_ex[index]] = diameters
+                    self.dir_scales_for_every_image[self.name_uploaded_images_without_ex[index]] = scale
 
                 # Сохраняем изображение в inference
                 if image_copy_with_masks is not None:
                     self.path_to_inference_dir = os.path.join(self.path_to_inference, f"{self.timestamp}")
                     self.path_to_inference_dir_image = os.path.join(self.path_to_inference_dir, "image")
                     self.path_to_inference_dir_boxplot = os.path.join(self.path_to_inference_dir, "boxplot")
+                    self.path_to_inference_dir_json = os.path.join(self.path_to_inference_dir, "json")
                     os.makedirs(self.path_to_inference_dir, exist_ok=True)
                     os.makedirs(self.path_to_inference_dir_image, exist_ok=True)
                     os.makedirs(self.path_to_inference_dir_boxplot, exist_ok=True)
+                    os.makedirs(self.path_to_inference_dir_json, exist_ok=True)
                     path_to_image_copy_with_mask = os.path.join(self.path_to_inference_dir_image,
                                                                 f"{self.name_uploaded_images_without_ex[index]}.png")
                     image_copy_with_masks.save(path_to_image_copy_with_mask)
                     self.list_path_to_inference.append(path_to_image_copy_with_mask)
                     self.list_image_copy_with_mask.append(image_copy_with_masks)
 
-            self._refresh_param()
+            # Добавление количества частиц для каждого изображения в data
+            self.dir_data = self.add_key_value(self.dir_data, "num_particles", self.dir_num_sphere_for_every_image)
+            if self.radio_scale_button == "Режим с измерениями":
+                # Добавление вычисленных значений диаметров для каждого изображения в data
+                self.dir_data = self.add_key_value(self.dir_data, "diameters", self.dir_diameters_for_every_image)
+                # Добавление значений масштаба для каждого изображения в data
+                self.dir_data = self.add_key_value(self.dir_data, "scales", self.dir_scales_for_every_image)
 
-    def _show(self):
+            path_to_json_file = os.path.join(self.path_to_inference_dir_json, "info.json")
 
-        if self.uploaded_images is not None:
-            self.helper.create_indentations_in_container(3, self.cont_load_images)
+            # Сохранение JSON-файла
+            self.save_to_json(data=self.dir_data, file_path=path_to_json_file)
 
-            if not self.list_path_to_inference == []:
-                if len(self.list_path_to_inference) == 1:
-
-                    caption = f'Имя: {self.name_uploaded_images[0]}, масштаб: {self.scale[0]}нм'
-
-                    # Отображаем изображение с наложенными масками
-                    self.cont_load_images.image(self.list_image_copy_with_mask[0],
-                                                caption=caption,
-                                                use_column_width=True,
-                                                width=700)
-
-                else:
-
-                    k_slider = self.cont_load_images.slider("Выберите изображение для отображения",
-                                                            min_value=1,
-                                                            max_value=len(self.list_path_to_inference),
-                                                            value=1,
-                                                            step=1,
-                                                            key="slider")
-
-                    caption = (f'Имя: {self.name_uploaded_images[k_slider - 1]},'
-                               f' масштаб: {int(self.scale[k_slider - 1])}нм,'
-                               f' кол.частиц: {self.dir_num_sphere_for_every_image[self.name_uploaded_images[k_slider - 1]]}')
-
-                    # Отображаем изображение с наложенными масками
-                    self.cont_load_images.image(self.list_image_copy_with_mask[k_slider - 1],
-                                                caption=caption,
-                                                use_column_width=True,
-                                                width=700)
+            # После каждого предсказания, необходимо обнулять переменные, хранящие результаты работы моделей
+            self._refresh_inference_params()
 
     def mask_to_polygon(self, mask_array):
         """
@@ -762,7 +748,7 @@ class PageTools:
                         diameter = ((polygon[i][0] - polygon[j][0]) ** 2 + (polygon[i][1] - polygon[j][1]) ** 2) ** 0.5
                         diameter_array.append(diameter)
 
-                diameter = np.mean(diameter_array[round(len(diameter_array)/1.5):])
+                diameter = np.mean(diameter_array[round(len(diameter_array) / 1.5):])
                 # diameter = np.mean([np.median(diameter_array), np.max(diameter_array)])
 
                 return diameter

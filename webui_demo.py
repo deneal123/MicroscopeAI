@@ -96,7 +96,7 @@ st.sidebar.image("img/logoAI.png")
 
 st.sidebar.title("Обращения")
 st.sidebar.markdown(
-    "[Нужна помощь? 🆘](https://github.com/deneal123/cv-classification-segmentation-nanoparticles/issues/new?assignees=&labels=help+wanted&projects=&template=help.md&title=%5BHELP%5D)")
+    "[Нужна помощь? 🆘](https://github.com/deneal123/MicroscopeAI/issues/new?assignees=&labels=help+wanted&projects=&template=help.md&title=%5BHELP%5D)")
 st.sidebar.markdown(
-    "[Есть предложения? 💡](https://github.com/deneal123/cv-classification-segmentation-nanoparticles/issues/new?assignees=&labels=enhancement&projects=&template=feature_request.md&title=%5BFEATURE%5D)")
-st.sidebar.markdown("[Хотите пообщаться? 🙋🏼‍♂](https://github.com/deneal123/cv-classification-segmentation-nanoparticles/discussions)")
+    "[Есть предложения? 💡](https://github.com/deneal123/MicroscopeAI/issues/new?assignees=&labels=enhancement&projects=&template=feature_request.md&title=%5BFEATURE%5D)")
+st.sidebar.markdown("[Хотите пообщаться? 🙋🏼‍♂](https://github.com/deneal123/MicroscopeAI/discussions)")

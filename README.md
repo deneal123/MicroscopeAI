@@ -27,12 +27,7 @@ git clone https://github.com/deneal123/MicroscopyAI.git
 5. Скачайте [модели детекции](https://disk.yandex.ru/d/aJDHGdLKqtZVLw) и
 [модель сегментации](https://disk.yandex.ru/d/xXhibgKYoAt4yQ), распаковав их по путям `weights/weights_detect`
 и `weights/weights_seg` в корень директории репозитория соответственно.
-6. Скачайте [архив с пользовательскими файлами](https://disk.yandex.ru/d/5ihD1tBUnB1VGg).
-7. Файлы архива `minibbox_ocr.zip`
-распакуйте по пути `C:\Users\(Имя пользователя)\.EasyOCR` в директории `model` (файл .pth) и
-`user_network` (файлы .py и .yaml).
-8. Конфигурационный файл архива `config.zip` распакуйте по пути `C:\Users\(Имя пользователя)\.streamlit`.
-9. Для запуска приложения можно использовать соответсвующий пункт '*Запуск Web-UI в браузере*'
+6. Для запуска приложения можно использовать соответсвующий пункт '*Запуск Web-UI в браузере*'
 в `setup.bat` или запустить `webui.bat`.
 
 
@@ -52,17 +47,15 @@ git clone https://github.com/deneal123/MicroscopyAI.git
 - "/weights/weights_detect/best_detect_bbox.pt" `Yolov8m`
 - "/weights/weights_detect/best_detect_bboxstick.pt" `Yolov8m`
 - "/weights/weights_detect/best_detect_minibbox.pt" `Yolov8m` 
-- "/weights/weights_seg/.14" (2 файла) `vgg_unet` *Архитектура модели в библиотеке ./library*
+- "/weights/weights_seg/" `UEffifientNetB3` *Архитектура модели в библиотеке ./library*
 
 
-Если необходимо использовать другие веса, требуется модернизировать функцию `default_path()`
+Если необходимо использовать другие веса, необходимо модернизировать функцию `default_path()`
 в скрипте `config_file.py`, заменив соответствующие названия весов.
 
 
 
 ### Демо
-
-![Интерфейс обучения](https://github.com/deneal123/MicroscopyAI/blob/master/img/train.png)
 
 ![Интерфейс Demo](https://github.com/deneal123/MicroscopyAI/blob/master/img/demo.png)
 
@@ -71,4 +64,4 @@ git clone https://github.com/deneal123/MicroscopyAI.git
 
 ### Лицензия
 
-Этот проект распространяется под лицензией [Commercial License](LICENSE).
+Этот проект распространяется под лицензией [GPLv3](LICENSE).

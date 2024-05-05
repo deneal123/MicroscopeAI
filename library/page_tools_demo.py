@@ -14,16 +14,17 @@ import cv2
 from library.components import add_text_to_image
 from datetime import datetime
 import time
-import easyocr
 import shutil
 from library.BoxPlot import BOXPLOT
 from stqdm import stqdm
 import library.style_button as sb
-from library.tf_keras_predict import predict
-from library.vgg_unet import vgg_unet
 from tensorflow.keras.models import load_model
 import tensorflow as tf
 import json
+from mmocr.apis import MMOCRInferencer
+from library.EfficientNetB3 import EfficientNetB3
+from library.UEfficientNetB3 import UEfficientNet
+from statistics import mean, stdev
 
 
 class PageTools:
@@ -49,21 +50,18 @@ class PageTools:
         # Инициализируем словари
         self._init_dir()
 
-        # Получаем путь к домашней папке пользователя
-        home_path = os.path.expanduser("~")
-        path_to_easyocr_user_network = os.path.join(home_path, ".EasyOCR", "user_network")
-        path_to_easyocr_model = os.path.join(home_path, ".EasyOCR", "model")
-
-        self.reader = easyocr.Reader(['en'], recog_network='minibbox_ocr',
-                                     user_network_directory=path_to_easyocr_user_network,
-                                     model_storage_directory=path_to_easyocr_model)
-
+        # Загрузка OCR модели
+        self.reader = MMOCRInferencer(rec='ABINet')
+        # Загрузка модели классификации
+        self.class_model = EfficientNetB3()
+        self.class_model.load_weights(self.path_to_class_model)
+        # Загрузка модели детекции
         self.detect_model_bbox = YOLO(f"{self.path_to_detect_model_bbox}")
         self.detect_model_bboxstick = YOLO(f"{self.path_to_detect_model_bboxstick}")
         self.detect_model_minibbox = YOLO(f"{self.path_to_detect_model_minibbox}")
         self.detect_model = YOLO(f"{self.path_to_detect_model}")
-
-        self.segment_model = vgg_unet(n_classes=2, input_height=224, input_width=224)
+        # Загрузка модели сегментации
+        self.segment_model = UEfficientNet()
         self.segment_model.load_weights(self.path_to_segment_model)
 
     def _time(self):
@@ -93,6 +91,8 @@ class PageTools:
         self.dir_diameters_for_every_image = {}
         # Словарь для хранения значений масштабов для каждого изображения
         self.dir_scales_for_every_image = {}
+        # Словарь для хранения средних значений и погрешностей вычисления алгоритма
+        self.dir_stdev_for_every_sphere_for_every_image = {}
 
     def _refresh_inference_params(self):
         self.boxes_ = []
@@ -165,14 +165,14 @@ class PageTools:
             elements = self.input_scale_param.split()
             try:
                 # Пробуем преобразовать каждый элемент в целое число
-                self.scale = [int(element) for element in elements]
+                self.scale = [float(element) for element in elements]
                 self.input_scale_bool = False
             except ValueError:
                 # Если возникает ошибка ValueError (невозможно преобразовать в int),
                 # выводим предупреждение пользователю
-                self.progress.warning("Будет применено автоматическое распознавание масштаба.")
-                self.progress.info("(Масштаб в формате a, b,..., где"
-                                   "a,b,... - значение нанометров в одном пикселе для каждого изображения)")
+                self.progress.warning("Будет применено автоматическое распознавание масштаба")
+                self.progress.info("(Масштаб в формате a b ... , где "
+                                   "a b ... - значение нанометров в одном пикселе для каждого нормированного изображения к 512 на 512)")
 
     def input_param_container(self):
 
@@ -180,7 +180,7 @@ class PageTools:
         self.cont_param = st.container()
 
         # Создание двух столбцов в контейнере
-        column_1, column_2, column_3, column_4 = self.cont_param.columns(4)
+        column_1, column_2, column_3 = self.cont_param.columns(3)
 
         with column_1:
             # Кнопка для запуска вычислений
@@ -197,6 +197,24 @@ class PageTools:
             self._warning_input_scale_param()
 
         with column_3:
+            # Кнопка очистки папки temp
+            sb._center()
+            self.clean_temp_button = st.button("Очистка temp", key="clean_temp_button")
+
+        # Создание двух столбцов в контейнере
+        column_1, column_2 = self.cont_param.columns(2)
+
+        with column_1:
+            sb._center()
+            self.radio_class_button = st.radio("p",
+                                               options=["Режим с ускорением",
+                                                        "Режим без ускорения"],
+                                               label_visibility="collapsed",
+                                               key="radio_class_button")
+            if self.radio_scale_button == "Режим с ускорением":
+                self.progress.info("Включен режим с ускорением")
+
+        with column_2:
             # Радиокнопка для отключения расчета диаметра
             sb._center()
             self.radio_scale_button = st.radio("p",
@@ -206,11 +224,6 @@ class PageTools:
                                                key="radio_scale_button")
             if self.radio_scale_button == "Режим без измерений":
                 self.progress.info("Включен режим без измерений")
-
-        with column_4:
-            # Кнопка очистки папки temp
-            sb._center()
-            self.clean_temp_button = st.button("Очистка temp", key="clean_temp_button")
 
         # Очистка папки temp
         if self.clean_temp_button:
@@ -228,10 +241,10 @@ class PageTools:
 
             if self.radio_scale_button == "Режим с измерениями":
 
-                # Коробка с палкой
-                self._separate_bboxstick()
-
                 if self.input_scale_bool:
+                    # Коробка с палкой
+                    self._separate_bboxstick()
+
                     # Мини коробка с масштабом изображения
                     self._separate_minibbox()
 
@@ -285,6 +298,11 @@ class PageTools:
         self.cont_load_images.divider()
 
         if self.uploaded_images:
+
+            if self.radio_class_button == "Режим с ускорением":
+                # Применяем автоматическое ускорение (задача классификации)
+                self._classification_image()
+
             for index, uploaded_image in enumerate(self.uploaded_images):
                 self.name_uploaded_images.append(uploaded_image.name)
                 self.name_uploaded_images_without_ex.append(os.path.splitext(uploaded_image.name)[0])
@@ -314,6 +332,28 @@ class PageTools:
 
                 if index == len(self.uploaded_images) and index != 0:
                     self.load_image_done = True
+
+    def _classification_image(self):
+
+        for index, uploaded_image in enumerate(stqdm(self.uploaded_images,
+                                                     total=len(self.uploaded_images),
+                                                     desc="Пропускаем изображения без частиц...",
+                                                     st_container=self.progress)):
+
+            image = Image.open(uploaded_image)
+            image = image.resize(size=(300, 300))
+
+            # Преобразование изображения в массив NumPy
+            img_array = img_to_array(image) / 255.0
+
+            # Предсказание сегментации с помощью модели
+            class_pred = self.class_model.predict(np.expand_dims(img_array, axis=0))[0]
+            class_pred = np.squeeze(class_pred)
+
+            if class_pred[2] < 0.5:
+                self.uploaded_images[index] = 0
+
+        self.uploaded_images = [x for x in self.uploaded_images if x != 0]
 
     def _separate_uploaded_image(self):
         for index, image in enumerate(stqdm(self.list_path_to_uploaded_images,
@@ -427,7 +467,6 @@ class PageTools:
 
             width, _ = self.bboxstick.size
             self.stick.append(width)
-        st.info(f"stick: {self.stick}")
 
     def _separate_minibbox(self):
         for index, bbox in enumerate(stqdm(self.list_path_to_bbox,
@@ -478,12 +517,23 @@ class PageTools:
                                             st_container=self.progress)):
 
             # Определяем масштаб, извлекая текст из мини бокса
-            results = self.reader.readtext(image, detail=0)
-            result = results[0].replace(" ", "")
-            # st.info(f"res: {results}")
+            result = self.reader(image, save_vis=False, return_vis=False)
+            result = result['predictions'][0].get('rec_texts')[0]
 
             # Убираем букву "m" из строки
-            result_without_m = result.replace("m", "")
+            result_without_m = result[:-1]
+
+            # Обрабатываем ложные срабатывания
+            result_without_m = result_without_m.replace("i", "1")
+            result_without_m = result_without_m.replace("l", "1")
+            result_without_m = result_without_m.replace("s", "5")
+            # st.info(f"res: {result_without_m}")
+
+            # Обрабатываем случай ложного определения буквы n
+            index_of_m = result_without_m.find("m")
+            if index_of_m != -1:
+                result_without_m = result_without_m.replace("m", "n")
+
             # st.info(f"res: {result_without_m}")
 
             # Ищем позицию буквы "u" или "n"
@@ -491,9 +541,7 @@ class PageTools:
             index_of_n = result_without_m.find("n")
 
             # Определяем индекс символа, который встречается раньше
-            if index_of_u != -1 and index_of_n != -1:
-                index_of_symbol = min(index_of_u, index_of_n)
-            elif index_of_u != -1:
+            if index_of_u != -1:
                 index_of_symbol = index_of_u
                 self.scale[index] *= 1000
             elif index_of_n != -1:
@@ -508,7 +556,7 @@ class PageTools:
             number_before_u_or_n = int(result_without_m[:index_of_symbol])
             # st.info(f"number_before_u_or_n: {number_before_u_or_n}")
             self.scale[index] *= number_before_u_or_n
-            st.info(f"scale: {self.scale[index]}")
+            # st.info(f"scale: {self.scale[index]}")
 
     def container_annotate_image(self):
         """
@@ -529,9 +577,10 @@ class PageTools:
                                                                 device=0,
                                                                 imgsz=512,
                                                                 save=False,
-                                                                conf=0.1,
-                                                                iou=0.1,
-                                                                verbose=False)
+                                                                conf=0.01,
+                                                                iou=0.01,
+                                                                verbose=False,
+                                                                augment=True)
 
                 detect = self.results_detect[0].boxes
 
@@ -562,16 +611,21 @@ class PageTools:
 
                 for i, seg_image in enumerate(self.segmented_images):
                     # Преобразование изображения в массив NumPy
-                    img_array = img_to_array(seg_image)
+                    img_array = img_to_array(seg_image) / 255.0
 
                     # Предсказание сегментации с помощью модели
-                    mask_pred = predict(model=self.segment_model, inp=img_array)
+                    mask_pred = self.segment_model.predict(np.expand_dims(img_array, axis=0))[0]
+                    mask_pred = np.squeeze(mask_pred)
 
-                    # Преобразование маски в бинарную маску (0 или 1)
-                    binary_mask = (mask_pred > 0.7).astype(np.uint8)
+                    # Пороговое значение для бинаризации
+                    threshold = 0.5  # Вы можете настроить это значение в зависимости от ваших потребностей
+
+                    # Бинаризация предсказанной маски
+                    binary_mask_pred = mask_pred > threshold
+                    binary_mask_pred = binary_mask_pred.astype(int)
 
                     # Преобразование бинарной маски в объект PIL Image
-                    mask_pred_pil = Image.fromarray(binary_mask * 255)
+                    mask_pred_pil = Image.fromarray(binary_mask_pred * 255)
 
                     # Добавление результата в список результатов сегментации
                     self.segmented_results.append(mask_pred_pil)
@@ -614,7 +668,10 @@ class PageTools:
                     image_copy_with_masks.paste(mask_cropped, (x_pixel, y_pixel), mask_cropped)
 
                 if self.radio_scale_button == "Режим с измерениями":
-                    diameters = self.calculate_particle_diameter(scale, self.stick[index], roi_size_image)
+                    if self.input_scale_param != '':
+                        diameters, stdev_value = self.calculate_particle_diameter(scale, 0, roi_size_image)
+                    else:
+                        diameters, stdev_value = self.calculate_particle_diameter(scale, self.stick[index], roi_size_image)
 
                 # Создаем объект ImageDraw для рисования на изображении
                 draw = ImageDraw.Draw(image_copy_with_masks)
@@ -651,6 +708,8 @@ class PageTools:
                 if self.radio_scale_button == "Режим с измерениями":
                     # Запись значения диаметров частиц на одном изображении в словарь.
                     self.dir_diameters_for_every_image[self.name_uploaded_images_without_ex[index]] = diameters
+                    self.dir_stdev_for_every_sphere_for_every_image[
+                        self.name_uploaded_images_without_ex[index]] = stdev_value
                     self.dir_scales_for_every_image[self.name_uploaded_images_without_ex[index]] = scale
 
                 # Сохраняем изображение в inference
@@ -674,6 +733,8 @@ class PageTools:
             if self.radio_scale_button == "Режим с измерениями":
                 # Добавление вычисленных значений диаметров для каждого изображения в data
                 self.dir_data = self.add_key_value(self.dir_data, "diameters", self.dir_diameters_for_every_image)
+                # Добавление вычисленных средних значений диаметров и погрешностей для каждой частицы каждого изображения
+                self.dir_data = self.add_key_value(self.dir_data, "stdev", self.dir_stdev_for_every_sphere_for_every_image)
                 # Добавление значений масштаба для каждого изображения в data
                 self.dir_data = self.add_key_value(self.dir_data, "scales", self.dir_scales_for_every_image)
 
@@ -719,6 +780,7 @@ class PageTools:
         - List[float]: Список диаметров частиц в реальных единицах длины.
         """
         particle_diameters = []
+        particle_stdev_value = []
 
         for i, mask_pred_pil in enumerate(self.segmented_results):
             # Проходим по результатам детекции и получаем соответствующий бокс
@@ -748,19 +810,29 @@ class PageTools:
                         diameter = ((polygon[i][0] - polygon[j][0]) ** 2 + (polygon[i][1] - polygon[j][1]) ** 2) ** 0.5
                         diameter_array.append(diameter)
 
-                diameter = np.mean(diameter_array[round(len(diameter_array) / 1.5):])
+                diameter = np.mean(diameter_array[round(len(diameter_array) / 1.5):]) * math.sqrt(2.3)
+                array_diameter = diameter_array[round(len(diameter_array) / 1.5):]
+
+                # Погрешность вычисления алгоритма для одной частицы
+                stdev_value = stdev(array_diameter) if len(
+                    array_diameter) > 1 else 0.0  # Предотвращаем деление на ноль для одного значения
+
                 # diameter = np.mean([np.median(diameter_array), np.max(diameter_array)])
 
-                return diameter
+                return diameter, stdev_value
 
-            diameter = feret_diameter(polygon)
+            diameter, stdev_value = feret_diameter(polygon)
 
             # Умножаем на масштаб для получения реального диаметра в физических единицах
-            particle_diameter = diameter * (scale / stick)  # Перевод нанометров в микрометры
+            if stick == 0.0:
+                particle_diameter = diameter * scale
+            else:
+                particle_diameter = diameter * (scale / stick)  # Перевод нанометров в микрометры
 
             particle_diameters.append(particle_diameter)
+            particle_stdev_value.append(stdev_value)
 
-        return particle_diameters
+        return particle_diameters, particle_stdev_value
 
     def _boxplot_num_sphere_all_image(self):
 

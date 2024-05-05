@@ -112,16 +112,27 @@ def git(arg: str, folder: str = None, ignore: bool = False):
             log.error(f'Обнаружены локальные изменения: подробности смотрите в журнале...')
         log.debug(f'Git output: {txt}')
 
-
 def pip(arg: str, ignore: bool = False, quiet: bool = False, show_stdout: bool = False):
     # arg = arg.replace('>=', '==')
+    mim = False
+    if arg.find("--mim") != -1:
+        mim = True
+        arg = arg.replace("--mim", "")
+    log.debug(arg)
+    log.debug(mim)
     if not quiet:
         log.info(f'Установка пакета: {arg.replace("install", "").replace("--upgrade", "").replace("--no-deps", "").replace("--force", "").replace("  ", " ").strip()}')
     log.debug(f"Запуск pip: {arg}")
     if show_stdout:
-        subprocess.run(f'"{sys.executable}" -m pip {arg}', shell=True, check=False, env=os.environ)
+        if mim:
+            subprocess.run(f'"{sys.executable}" -m mim {arg}', shell=True, check=False, env=os.environ)
+        else:
+            subprocess.run(f'"{sys.executable}" -m pip {arg}', shell=True, check=False, env=os.environ)
     else:
-        result = subprocess.run(f'"{sys.executable}" -m pip {arg}', shell=True, check=False, env=os.environ, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        if mim:
+            result = subprocess.run(f'"{sys.executable}" -m mim {arg}', shell=True, check=False, env=os.environ, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        else:
+            result = subprocess.run(f'"{sys.executable}" -m pip {arg}', shell=True, check=False, env=os.environ, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         txt = result.stdout.decode(encoding="utf8", errors="ignore")
         if len(result.stderr) > 0:
             txt += ('\n' if len(txt) > 0 else '') + result.stderr.decode(encoding="utf8", errors="ignore")
@@ -129,7 +140,10 @@ def pip(arg: str, ignore: bool = False, quiet: bool = False, show_stdout: bool =
         if result.returncode != 0 and not ignore:
             global errors # pylint: disable=global-statement
             errors += 1
-            log.error(f'Ошибка запуска pip: {arg}')
+            if mim:
+                log.error(f'Ошибка запуска mim: {arg}')
+            else:
+                log.error(f'Ошибка запуска pip: {arg}')
             log.debug(f'Pip вывод: {txt}')
         return txt
 
@@ -255,7 +269,7 @@ def ensure_base_requirements():
     try:
         import rich   # pylint: disable=unused-import
     except ImportError:
-        install('--upgrade rich', 'rich')
+        install('rich', 'rich')
 
 
 def run_cmd(run_cmd):

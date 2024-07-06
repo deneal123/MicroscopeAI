@@ -57,12 +57,12 @@ git clone https://github.com/deneal123/MicroscopyAI.git
 
 ### Демо
 
-![Пример работы алгоритма](https://github.com/deneal123/MicroscopyAI/blob/master/img/combined_image_res_algoritm.jpg)
+![Пример работы алгоритма](/img/combined_image_res_algoritm.jpg)
 
 
 ### Как работает приложение?
 
-![Блокс схема алгоритма](https://github.com/deneal123/MicroscopyAI/blob/master/img/BlokShema.svg)
+![Блокс схема алгоритма](/img/BlokShema.svg)
 
 
 ### Лицензия

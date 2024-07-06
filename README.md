@@ -8,8 +8,8 @@
 
 > [**Разработка алгоритма классификации и сегментации
 > СЭМ-изображений сферических наночастиц на поверхности биосовместимых
-> материалов**](https://)           
-> Вольхин Д.Ф - студент НИУ МИЭТ.
+> материалов**](https://miet.ru/upload/content/conference/2024/programma_microel_2024.pdf)           
+> Вольхин Д.Ф - НИУ МИЭТ // Микроэлектроника и информатика 2024.
 
 
 ### Установка
@@ -57,9 +57,12 @@ git clone https://github.com/deneal123/MicroscopyAI.git
 
 ### Демо
 
-![Интерфейс Demo](https://github.com/deneal123/MicroscopyAI/blob/master/img/demo.png)
+![Пример работы алгоритма](https://github.com/deneal123/MicroscopyAI/blob/master/img/combined_image_res_algoritm.jpg)
 
 
+### Как работает приложение?
+
+![Блокс схема алгоритма](https://github.com/deneal123/MicroscopyAI/blob/master/img/BlokShema.svg)
 
 
 ### Лицензия

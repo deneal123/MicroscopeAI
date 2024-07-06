@@ -1,0 +1,99 @@
+2024-04-10 02:21:00,511 | sd | DEBUG | setup_common | Невозможно прочесть release...
+2024-04-10 02:21:00,511 | sd | INFO | setup_common | Python 3.9.16 on Windows
+2024-04-10 02:21:00,519 | sd | DEBUG | setup_common | Найденная версия пакета: pip 22.0.4
+2024-04-10 02:21:00,520 | sd | INFO | setup_common | Проверка статуса установки модулей из requirements_windows_tensorflow.txt...
+2024-04-10 02:21:00,521 | sd | DEBUG | setup_common | Версия пакета не найдена: torch
+2024-04-10 02:21:00,521 | sd | DEBUG | setup_common | install --upgrade torch==1.12.1+cu116 torchvision==0.13.1+cu116 --index-url https://download.pytorch.org/whl/cu116
+2024-04-10 02:21:00,521 | sd | DEBUG | setup_common | False
+2024-04-10 02:21:00,521 | sd | INFO | setup_common | Установка пакета: torch==1.12.1+cu116 torchvision==0.13.1+cu116 --index-url https://download.pytorch.org/whl/cu116
+2024-04-10 02:21:00,524 | sd | DEBUG | setup_common | Запуск pip: install --upgrade torch==1.12.1+cu116 torchvision==0.13.1+cu116 --index-url https://download.pytorch.org/whl/cu116
+2024-04-10 02:22:04,086 | sd | DEBUG | setup_common | Версия пакета не найдена: tensorboard
+2024-04-10 02:22:04,086 | sd | DEBUG | setup_common | install --upgrade tensorboard==2.10.1 tensorflow==2.10.0
+2024-04-10 02:22:04,086 | sd | DEBUG | setup_common | False
+2024-04-10 02:22:04,086 | sd | INFO | setup_common | Установка пакета: tensorboard==2.10.1 tensorflow==2.10.0
+2024-04-10 02:22:04,090 | sd | DEBUG | setup_common | Запуск pip: install --upgrade tensorboard==2.10.1 tensorflow==2.10.0
+2024-04-10 02:22:31,362 | sd | INFO | setup_common | Проверка статуса установки модулей из requirements.txt...
+2024-04-10 02:22:31,364 | sd | DEBUG | setup_common | Версия пакета не найдена: openmim
+2024-04-10 02:22:31,364 | sd | DEBUG | setup_common | install --upgrade openmim
+2024-04-10 02:22:31,364 | sd | DEBUG | setup_common | False
+2024-04-10 02:22:31,364 | sd | INFO | setup_common | Установка пакета: openmim
+2024-04-10 02:22:31,365 | sd | DEBUG | setup_common | Запуск pip: install --upgrade openmim
+2024-04-10 02:22:47,342 | sd | DEBUG | setup_common | Версия пакета не найдена: mmengine
+2024-04-10 02:22:47,343 | sd | DEBUG | setup_common | install --upgrade mmengine 
+2024-04-10 02:22:47,343 | sd | DEBUG | setup_common | True
+2024-04-10 02:22:47,343 | sd | INFO | setup_common | Установка пакета: mmengine
+2024-04-10 02:22:47,344 | sd | DEBUG | setup_common | Запуск pip: install --upgrade mmengine 
+2024-04-10 02:22:58,490 | sd | DEBUG | setup_common | Версия пакета не найдена: mmocr
+2024-04-10 02:22:58,491 | sd | DEBUG | setup_common | install --upgrade mmocr 
+2024-04-10 02:22:58,491 | sd | DEBUG | setup_common | True
+2024-04-10 02:22:58,491 | sd | INFO | setup_common | Установка пакета: mmocr
+2024-04-10 02:22:58,492 | sd | DEBUG | setup_common | Запуск pip: install --upgrade mmocr 
+2024-04-10 02:23:21,810 | sd | DEBUG | setup_common | Версия пакета не найдена: 'mmcv
+2024-04-10 02:23:21,810 | sd | DEBUG | setup_common | install --upgrade 'mmcv==2.0.0rc4' 
+2024-04-10 02:23:21,810 | sd | DEBUG | setup_common | True
+2024-04-10 02:23:21,810 | sd | INFO | setup_common | Установка пакета: 'mmcv==2.0.0rc4'
+2024-04-10 02:23:21,812 | sd | DEBUG | setup_common | Запуск pip: install --upgrade 'mmcv==2.0.0rc4' 
+2024-04-10 02:23:23,677 | sd | ERROR | setup_common | Ошибка запуска mim: install --upgrade 'mmcv==2.0.0rc4' 
+2024-04-10 02:23:23,679 | sd | DEBUG | setup_common | Pip вывод: ERROR: Invalid requirement: "'mmcv==2.0.0rc4'"
+WARNING: You are using pip version 22.0.4; however, version 24.0 is available.
+You should consider upgrading via the 'C:\Users\NightMare\PycharmProjects\MicroscopeAI\venv\Scripts\python.exe -m pip install --upgrade pip' command.
+2024-04-10 02:23:23,680 | sd | DEBUG | setup_common | Версия пакета не найдена: albumentations
+2024-04-10 02:23:23,680 | sd | DEBUG | setup_common | install --upgrade albumentations==1.4.2
+2024-04-10 02:23:23,680 | sd | DEBUG | setup_common | False
+2024-04-10 02:23:23,680 | sd | INFO | setup_common | Установка пакета: albumentations==1.4.2
+2024-04-10 02:23:23,681 | sd | DEBUG | setup_common | Запуск pip: install --upgrade albumentations==1.4.2
+2024-04-10 02:23:34,017 | sd | DEBUG | setup_common | Версия пакета не найдена: hydralit-components
+2024-04-10 02:23:34,018 | sd | DEBUG | setup_common | install --upgrade hydralit-components==1.0.10
+2024-04-10 02:23:34,018 | sd | DEBUG | setup_common | False
+2024-04-10 02:23:34,018 | sd | INFO | setup_common | Установка пакета: hydralit-components==1.0.10
+2024-04-10 02:23:34,019 | sd | DEBUG | setup_common | Запуск pip: install --upgrade hydralit-components==1.0.10
+2024-04-10 02:23:50,723 | sd | DEBUG | setup_common | Версия пакета не найдена: Markdown
+2024-04-10 02:23:50,724 | sd | DEBUG | setup_common | install --upgrade Markdown==3.6
+2024-04-10 02:23:50,724 | sd | DEBUG | setup_common | False
+2024-04-10 02:23:50,724 | sd | INFO | setup_common | Установка пакета: Markdown==3.6
+2024-04-10 02:23:50,725 | sd | DEBUG | setup_common | Запуск pip: install --upgrade Markdown==3.6
+2024-04-10 02:23:52,452 | sd | DEBUG | setup_common | Версия пакета не найдена: numpy
+2024-04-10 02:23:52,452 | sd | DEBUG | setup_common | install --upgrade numpy==1.26.4
+2024-04-10 02:23:52,453 | sd | DEBUG | setup_common | False
+2024-04-10 02:23:52,453 | sd | INFO | setup_common | Установка пакета: numpy==1.26.4
+2024-04-10 02:23:52,454 | sd | DEBUG | setup_common | Запуск pip: install --upgrade numpy==1.26.4
+2024-04-10 02:23:54,300 | sd | DEBUG | setup_common | Версия пакета не найдена: opencv-python
+2024-04-10 02:23:54,300 | sd | DEBUG | setup_common | install --upgrade opencv-python==4.9.0.80
+2024-04-10 02:23:54,300 | sd | DEBUG | setup_common | False
+2024-04-10 02:23:54,301 | sd | INFO | setup_common | Установка пакета: opencv-python==4.9.0.80
+2024-04-10 02:23:54,302 | sd | DEBUG | setup_common | Запуск pip: install --upgrade opencv-python==4.9.0.80
+2024-04-10 02:23:55,958 | sd | DEBUG | setup_common | Версия пакета не найдена: Pillow
+2024-04-10 02:23:55,958 | sd | DEBUG | setup_common | install --upgrade Pillow==9.3.0
+2024-04-10 02:23:55,958 | sd | DEBUG | setup_common | False
+2024-04-10 02:23:55,958 | sd | INFO | setup_common | Установка пакета: Pillow==9.3.0
+2024-04-10 02:23:55,960 | sd | DEBUG | setup_common | Запуск pip: install --upgrade Pillow==9.3.0
+2024-04-10 02:23:58,267 | sd | DEBUG | setup_common | Версия пакета не найдена: protobuf
+2024-04-10 02:23:58,267 | sd | DEBUG | setup_common | install --upgrade protobuf==3.20.1
+2024-04-10 02:23:58,267 | sd | DEBUG | setup_common | False
+2024-04-10 02:23:58,267 | sd | INFO | setup_common | Установка пакета: protobuf==3.20.1
+2024-04-10 02:23:58,268 | sd | DEBUG | setup_common | Запуск pip: install --upgrade protobuf==3.20.1
+2024-04-10 02:24:00,372 | sd | DEBUG | setup_common | Версия пакета не найдена: stqdm
+2024-04-10 02:24:00,373 | sd | DEBUG | setup_common | install --upgrade stqdm==0.0.5
+2024-04-10 02:24:00,373 | sd | DEBUG | setup_common | False
+2024-04-10 02:24:00,373 | sd | INFO | setup_common | Установка пакета: stqdm==0.0.5
+2024-04-10 02:24:00,374 | sd | DEBUG | setup_common | Запуск pip: install --upgrade stqdm==0.0.5
+2024-04-10 02:24:02,138 | sd | DEBUG | setup_common | Версия пакета не найдена: streamlit
+2024-04-10 02:24:02,138 | sd | DEBUG | setup_common | install --upgrade streamlit==1.32.2
+2024-04-10 02:24:02,138 | sd | DEBUG | setup_common | False
+2024-04-10 02:24:02,138 | sd | INFO | setup_common | Установка пакета: streamlit==1.32.2
+2024-04-10 02:24:02,140 | sd | DEBUG | setup_common | Запуск pip: install --upgrade streamlit==1.32.2
+2024-04-10 02:24:05,424 | sd | DEBUG | setup_common | Версия пакета не найдена: streamlit-lottie
+2024-04-10 02:24:05,425 | sd | DEBUG | setup_common | install --upgrade streamlit-lottie==0.0.5
+2024-04-10 02:24:05,425 | sd | DEBUG | setup_common | False
+2024-04-10 02:24:05,425 | sd | INFO | setup_common | Установка пакета: streamlit-lottie==0.0.5
+2024-04-10 02:24:05,426 | sd | DEBUG | setup_common | Запуск pip: install --upgrade streamlit-lottie==0.0.5
+2024-04-10 02:24:07,328 | sd | DEBUG | setup_common | Версия пакета не найдена: tqdm
+2024-04-10 02:24:07,329 | sd | DEBUG | setup_common | install --upgrade tqdm==4.66.2
+2024-04-10 02:24:07,329 | sd | DEBUG | setup_common | False
+2024-04-10 02:24:07,329 | sd | INFO | setup_common | Установка пакета: tqdm==4.66.2
+2024-04-10 02:24:07,330 | sd | DEBUG | setup_common | Запуск pip: install --upgrade tqdm==4.66.2
+2024-04-10 02:24:09,068 | sd | DEBUG | setup_common | Версия пакета не найдена: ultralytics
+2024-04-10 02:24:09,068 | sd | DEBUG | setup_common | install --upgrade ultralytics==8.1.36
+2024-04-10 02:24:09,068 | sd | DEBUG | setup_common | False
+2024-04-10 02:24:09,068 | sd | INFO | setup_common | Установка пакета: ultralytics==8.1.36
+2024-04-10 02:24:09,070 | sd | DEBUG | setup_common | Запуск pip: install --upgrade ultralytics==8.1.36

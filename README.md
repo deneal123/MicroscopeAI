@@ -50,7 +50,7 @@ git clone https://github.com/deneal123/MicroscopyAI.git
 - "/weights/weights_seg/" `UEffifientNetB3` *Архитектура модели в библиотеке ./library*
 
 
-Если необходимо использовать другие веса, необходимо модернизировать функцию `default_path()`
+Если хотите использовать другие веса, необходимо модернизировать функцию `default_path()`
 в скрипте `config_file.py`, заменив соответствующие названия весов.
 
 

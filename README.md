@@ -21,11 +21,11 @@
 git clone https://github.com/deneal123/MicroscopyAI.git
 ```
 2. Запустите файл `setup.but` и выберите вариант "*Установка MicroscopeAI*".
-3. Скачайте и распакуйте [архив](https://disk.yandex.ru/d/ismGT13a5p5grw) `cudnn_windows` в корень репозитория 
+3. Скачайте и распакуйте [архив](https://disk.yandex.ru/d/) `cudnn_windows` в корень репозитория 
 4. После установки всех необходимых зависимостей установите файлы cudnn, выбрав вариант "*Установка cudnn файлов*"
 в `setup.bat`.
-5. Скачайте [модели детекции](https://disk.yandex.ru/d/aJDHGdLKqtZVLw) и
-[модель сегментации](https://disk.yandex.ru/d/xXhibgKYoAt4yQ), распаковав их по путям `weights/weights_detect`
+5. Скачайте [модели детекции](https://disk.yandex.ru/d/) и
+[модель сегментации](https://disk.yandex.ru/d/), распаковав их по путям `weights/weights_detect`
 и `weights/weights_seg` в корень директории репозитория соответственно.
 6. Для запуска приложения можно использовать соответсвующий пункт '*Запуск Web-UI в браузере*'
 в `setup.bat` или запустить `webui.bat`.

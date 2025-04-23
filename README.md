@@ -8,7 +8,7 @@
 
 > [**Разработка алгоритма классификации и сегментации
 > СЭМ-изображений сферических наночастиц на поверхности биосовместимых
-> материалов**](https://miet.ru/upload/content/conference/2024/programma_microel_2024.pdf)           
+> материалов**](https://cyberleninka.ru/article/n/razrabotka-algoritma-klassifikatsii-i-segmentatsii-sem-izobrazheniy-sfericheskih-nanochastits-na-poverhnosti-biosovmestimyh)
 > Вольхин Д.Ф - НИУ МИЭТ // Микроэлектроника и информатика 2024.
 
 

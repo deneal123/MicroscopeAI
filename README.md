@@ -68,3 +68,16 @@ git clone https://github.com/deneal123/MicroscopyAI.git
 ### Лицензия
 
 Этот проект распространяется под лицензией [GPLv3](LICENSE).
+
+### Цитирование
+
+@article{2025nanoparticles,
+title={РАЗРАБОТКА АЛГОРИТМА КЛАССИФИКАЦИИ И СЕГМЕНТАЦИИ СЭМ-ИЗОБРАЖЕНИЙ СФЕРИЧЕСКИХ НАНОЧАСТИЦ НА ПОВЕРХНОСТИ БИОСОВМЕСТИМЫХ МАТЕРИАЛОВ},
+author={Рябкин, Д. И. and Вольхин, Д. Ф.},
+journal={Экономика и качество систем связи},
+number={35},
+pages={101--110},
+year={2025},
+url={https://cyberleninka.ru/article/n/razrabotka-algoritma-klassifikatsii-i-segmentatsii-sem-izobrazheniy-sfericheskih-nanochastits-na-poverhnosti-biosovmestimyh},
+}
+

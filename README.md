@@ -25,9 +25,9 @@ git clone https://github.com/deneal123/MicroscopyAI.git
 4. После установки всех необходимых зависимостей установите файлы cudnn, выбрав вариант "*Установка cudnn файлов*"
 в `setup.bat`.
 5. Скачайте [модели детекции](https://disk.yandex.ru/d/uQWWlgRHzHg3Vg),
-[модель сегментации](https://disk.yandex.ru/d/GCUTNmO_XJM_6g) и [модель классификации](https://disk.yandex.ru/d/3WsVGefOayEB3Q), распаковав их по путям `weights/weights_detect`
-и `weights/weights_seg` в корень директории репозитория соответственно.
-6. Для запуска приложения можно использовать соответсвующий пункт '*Запуск Web-UI в браузере*'
+[модель сегментации](https://disk.yandex.ru/d/GCUTNmO_XJM_6g) и [модель классификации](https://disk.yandex.ru/d/3WsVGefOayEB3Q), распаковав их по путям `weights/weights_detect`,
+`weights/weights_seg` и `weights/weights_class` в корень директории репозитория соответственно.
+7. Для запуска приложения можно использовать соответсвующий пункт '*Запуск Web-UI в браузере*'
 в `setup.bat` или запустить `webui.bat`.
 
 ### Дополнительно
